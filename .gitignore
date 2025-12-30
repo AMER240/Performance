@@ -1,0 +1,11 @@
+# Visual Studio system files (do NOT commit)
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.vsidx
+*.vsidx-journal
+*.vscode/
+.idea/
+Performance/appsettings.json

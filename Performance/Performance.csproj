@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Performance.Application\Performance.Application.csproj" />
+    <ProjectReference Include="..\Performance.Infrastructure\Performance.Infrastructure.csproj" />
+    <PackageReference Include="DevExpress.Win.Design" Version="25.1.5" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Application\**" />
+    <Compile Remove="Infrastructure\**" />
+    <Content Remove="Application\**" />
+    <Content Remove="Infrastructure\**" />
+    <EmbeddedResource Remove="Application\**" />
+    <EmbeddedResource Remove="Infrastructure\**" />
+    <None Remove="Application\**" />
+    <None Remove="Infrastructure\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Application\Services\EnhancedTaskSuggestionService.cs" />
+    <Compile Include="Application\Services\GeminiProjectSuggestionService.cs" />
+    <Compile Include="Application\Services\GeminiTaskSuggestionService.cs" />
+    <Compile Include="Application\Services\IProjectSuggestionService.cs" />
+    <Compile Include="Infrastructure\Migrations\20241230120000_InitialCreate.cs" />
+    <Compile Include="Infrastructure\Migrations\20241230120000_InitialCreate.Designer.cs" />
+    <Compile Include="Infrastructure\Migrations\20241230121500_AddUserSector.cs" />
+    <Compile Include="Infrastructure\Migrations\20241230121500_AddUserSector.Designer.cs" />
+    <Compile Include="Infrastructure\Migrations\PerformanceDbContextModelSnapshot.cs" />
+  </ItemGroup>
+
+</Project>
