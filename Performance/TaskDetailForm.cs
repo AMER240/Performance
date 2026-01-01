@@ -275,21 +275,19 @@ namespace Performance
         {
             try
             {
-                // Reload task to get latest data
-                _task = (await _taskService.GetAsync(_task.Id))!;
+                //  Single query with all relations loaded
+                _task = (await _taskService.GetAsync(_task.Id, includeRelations: true))!;
 
                 _lblTitle.Text = _task.Title;
                 _lblDescription.Text = _task.Description ?? "No description";
-                
-                // Load project name
-                var project = await _projectService.GetAsync(_task.ProjectId);
-                _lblProject.Text = project?.Name ?? "Unknown Project";
 
-                // Load assigned user name instead of ID
-                if (!string.IsNullOrEmpty(_task.AssignedToUserId))
+                //  Use navigation property (already loaded)
+                _lblProject.Text = _task.Project?.Name ?? "Unknown Project";
+
+                //  Use navigation property (already loaded)
+                if (_task.AssignedToUser != null)
                 {
-                    var assignedUser = await _userService.GetAsync(_task.AssignedToUserId);
-                    _lblAssignedTo.Text = assignedUser?.UserName ?? _task.AssignedToUserId;
+                    _lblAssignedTo.Text = _task.AssignedToUser.UserName;
                 }
                 else
                 {

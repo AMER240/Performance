@@ -354,7 +354,9 @@ namespace Performance
         private async Task RefreshList()
         {
             if (_projectId == 0) return;
-            var tasks = await _taskService.ListByProjectAsync(_projectId);
+
+            //  Include relations to avoid N+1 problem
+            var tasks = await _taskService.ListByProjectAsync(_projectId, includeRelations: true);
             _grid.DataSource = tasks;
             UpdateTaskCount(tasks.Count);
         }
@@ -362,32 +364,33 @@ namespace Performance
         private async Task ApplyFilters()
         {
             if (_projectId == 0) return;
-            
-            var tasks = await _taskService.ListByProjectAsync(_projectId);
-            
+
+            //  Include relations once
+            var tasks = await _taskService.ListByProjectAsync(_projectId, includeRelations: true);
+
             // Apply search filter
             if (!string.IsNullOrWhiteSpace(_txtSearch.Text))
             {
                 var searchText = _txtSearch.Text.Trim().ToLowerInvariant();
-                tasks = tasks.Where(t => 
+                tasks = tasks.Where(t =>
                     (t.Title ?? "").ToLowerInvariant().Contains(searchText) ||
                     (t.Description ?? "").ToLowerInvariant().Contains(searchText)).ToList();
             }
-            
+
             // Apply status filter
             if (_cmbStatusFilter.SelectedIndex > 0)
             {
                 var status = _cmbStatusFilter.SelectedItem?.ToString();
                 tasks = tasks.Where(t => t.Status.ToString() == status?.Replace(" ", "")).ToList();
             }
-            
+
             // Apply priority filter
             if (_cmbPriorityFilter.SelectedIndex > 0)
             {
                 var priority = _cmbPriorityFilter.SelectedItem?.ToString();
                 tasks = tasks.Where(t => t.Priority.ToString() == priority).ToList();
             }
-            
+
             _grid.DataSource = tasks;
             UpdateTaskCount(tasks.Count);
         }
