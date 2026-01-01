@@ -1,6 +1,37 @@
 # Performance - Project Management System
 
-A comprehensive project and task management system built with .NET 8, Windows Forms, and DevExpress components.
+A comprehensive project and task management system built with **.NET 8**, **Windows Forms**, and **Clean Architecture**.
+
+> **? Clean Architecture Implementation Completed - January 1, 2026**
+
+---
+
+## ?? Quick Start
+
+### ?? Important: Startup Project Setup
+
+This solution uses **Clean Architecture** with multiple projects. To run the application:
+
+#### Option 1: Visual Studio
+1. Open `Performance.sln`
+2. In **Solution Explorer**, right-click **`Performance`** project (under `src/Performance.UI`)
+3. Select **"Set as Startup Project"**
+4. Press **F5** to run
+
+#### Option 2: Command Line (Recommended)
+```powershell
+# Using batch file
+Run-Performance.bat
+
+# Or manually
+dotnet run --project src/Performance.UI
+```
+
+#### Option 3: Build + Run
+```powershell
+dotnet build Performance.sln
+dotnet run --project src/Performance.UI --no-build
+```
 
 ---
 
@@ -35,44 +66,71 @@ A comprehensive project and task management system built with .NET 8, Windows Fo
 
 ## ??? Architecture
 
+**Clean Architecture** with 4 distinct layers:
+
 ```
-Performance/
-??? Performance/                    # Main UI Project (Windows Forms)
-?   ??? LoginForm.cs               # User authentication
-?   ??? MainForm.cs                # Dashboard with project gallery
-?   ??? TaskListForm.cs            # Task management
-?   ??? TaskEditForm.cs            # Task CRUD with AI suggestions
-?   ??? TaskDetailForm.cs          # Task details view
-?   ??? ProjectEditForm.cs         # Project CRUD
-?   ??? UserManagementForm.cs      # User administration (Manager only)
-?   ??? UserProfileForm.cs         # User profile + My Tasks
-?   ??? DashboardStatsPanel.cs     # Statistics cards
-?   ??? UI/                        # UI Helpers
-?       ??? UiColors.cs            # Color palette
-?       ??? UiHelpers.cs           # Styling utilities
-?       ??? BaseForm.cs            # Base form class
+Performance.sln
 ?
-??? Performance.Application/        # Business Logic Layer
-?   ??? Services/
-?       ??? IProjectService.cs     
-?       ??? ProjectService.cs
-?       ??? ITaskService.cs
-?       ??? TaskService.cs
-?       ??? IUserService.cs
-?       ??? UserService.cs
-?       ??? ITaskSuggestionService.cs
-?       ??? EnhancedTaskSuggestionService.cs  # AI Engine
+??? src/
+?   ??? Performance.Domain/          ? Core Layer (No dependencies)
+?   ?   ??? Entities/
+?   ?   ?   ??? UserEntity.cs       (Pure POCO)
+?   ?   ?   ??? ProjectEntity.cs    (Pure POCO)
+?   ?   ?   ??? TaskEntity.cs       (Pure POCO)
+?   ?   ??? Enums/
+?   ?       ??? UserRole.cs
+?   ?       ??? TaskStatus.cs
+?   ?       ??? TaskPriority.cs
+?   ?       ??? ProjectStatus.cs
+?   ?
+?   ??? Performance.Application/     ? Business Logic Layer
+?   ?   ??? Interfaces/
+?   ?   ?   ??? IProjectService.cs
+?   ?   ?   ??? ITaskService.cs
+?   ?   ?   ??? IUserService.cs
+?   ?   ?   ??? ITaskSuggestionService.cs
+?   ?   ?   ??? IRepository<T>.cs
+?   ?   ??? Services/
+?   ?       ??? ProjectService.cs
+?   ?       ??? TaskService.cs
+?   ?       ??? UserService.cs
+?   ?       ??? EnhancedTaskSuggestionService.cs
+?   ?
+?   ??? Performance.Infrastructure/  ? Data Access Layer
+?   ?   ??? Data/
+?   ?   ?   ??? PerformanceDbContext.cs
+?   ?   ??? Repositories/
+?   ?   ?   ??? Repository<T>.cs    (Generic)
+?   ?   ?   ??? ProjectRepository.cs
+?   ?   ?   ??? TaskRepository.cs
+?   ?   ?   ??? UserRepository.cs
+?   ?   ??? Migrations/
+?   ?
+?   ??? Performance.UI/              ? Presentation Layer
+?       ??? Forms/
+?       ?   ??? LoginForm.cs
+?       ?   ??? MainForm.cs
+?       ?   ??? TaskListForm.cs
+?       ?   ??? ProjectEditForm.cs
+?       ?   ??? UserManagementForm.cs
+?       ?   ??? UserProfileForm.cs
+?       ??? UI/
+?       ?   ??? UiColors.cs
+?       ?   ??? UiHelpers.cs
+?       ??? Program.cs              (DI Container)
+?       ??? appsettings.json
 ?
-??? Performance.Infrastructure/     # Data Access Layer
-    ??? Application/
-    ?   ??? PerformanceDbContext.cs
-    ??? Entities/
-    ?   ??? ProjectEntity.cs
-    ?   ??? TaskEntity.cs
-    ?   ??? UserEntity.cs
-    ??? Migrations/
-        ??? 20251226222927_InitialCreate.cs
-        ??? 20251228220216_AddUserProfileFields.cs
+??? Documentation/
+    ??? CLEAN_ARCHITECTURE_COMPLETION.md
+    ??? CLEAN_ARCHITECTURE_STATUS.md
+    ??? WORKSPACE_INFORMATION.md
+```
+
+### Dependency Flow
+```
+UI ? Infrastructure ? Application ? Domain
+                                      ?
+                              (No dependencies!)
 ```
 
 ---
@@ -213,10 +271,10 @@ Password: employee123
 ## ?? Getting Started
 
 ### Prerequisites
-- .NET 8 SDK
-- Visual Studio 2022
-- SQL Server LocalDB
-- DevExpress WinForms components
+- **.NET 8 SDK** - [Download](https://dotnet.microsoft.com/download/dotnet/8.0)
+- **Visual Studio 2022** (recommended)
+- **SQL Server LocalDB** (included with Visual Studio)
+- **DevExpress WinForms** components (v25.1.5)
 
 ### Installation
 
@@ -228,47 +286,95 @@ cd Performance
 
 2. **Restore NuGet packages:**
 ```bash
-dotnet restore
+dotnet restore Performance.sln
 ```
 
 3. **Update connection string** (if needed):
-   - File: `Performance/appsettings.json`
+   - File: `src/Performance.UI/appsettings.json`
    ```json
    {
      "ConnectionStrings": {
-       "DefaultConnection": "Server=localhost;Database=PerformanceDb;Trusted_Connection=True;Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=true"
+       "DefaultConnection": "Server=localhost;Database=PerformanceDb;Trusted_Connection=True;..."
      }
    }
    ```
 
-4. **Apply migrations:**
+4. **Build solution:**
 ```bash
-dotnet ef database update --project Performance.Infrastructure --startup-project Performance
+dotnet build Performance.sln
 ```
 
 5. **Run the application:**
 ```bash
-dotnet run --project Performance
+# Option 1: Batch file
+Run-Performance.bat
+
+# Option 2: Command line
+dotnet run --project src/Performance.UI
+
+# Option 3: Visual Studio
+# Set Performance (UI) as Startup Project, then press F5
+```
+
+### Database Migrations
+
+The application will **automatically apply migrations** on startup via `Program.cs`.
+
+If you need manual control:
+
+```bash
+# Add migration
+dotnet ef migrations add MigrationName \
+  --project src/Performance.Infrastructure \
+  --startup-project src/Performance.UI
+
+# Update database
+dotnet ef database update \
+  --project src/Performance.Infrastructure \
+  --startup-project src/Performance.UI
+
+# Remove last migration
+dotnet ef migrations remove \
+  --project src/Performance.Infrastructure \
+  --startup-project src/Performance.UI
 ```
 
 ---
 
 ## ?? Project Structure
 
-### **Performance (UI)**
-- **Forms:** All Windows Forms (Login, Main, Task, Project, User)
-- **UI Folder:** Styling helpers, colors, base forms
-- **Program.cs:** Entry point with DI configuration
+### **Clean Architecture Layers**
 
-### **Performance.Application (Business Logic)**
-- **Services:** Business logic interfaces and implementations
-- **IProjectService, ITaskService, IUserService**
-- **ITaskSuggestionService:** AI suggestion engine
+#### 1. **Domain Layer** (Core - No Dependencies)
+- **Entities:** `UserEntity`, `ProjectEntity`, `TaskEntity` (Pure POCOs)
+- **Enums:** `UserRole`, `TaskStatus`, `TaskPriority`, `ProjectStatus`
+- **No framework dependencies** - Can be used anywhere
 
-### **Performance.Infrastructure (Data Access)**
-- **Entities:** Database models (Project, Task, User)
-- **PerformanceDbContext:** EF Core DbContext
-- **Migrations:** Database schema versions
+#### 2. **Application Layer** (Business Logic)
+- **Interfaces:** `IProjectService`, `ITaskService`, `IUserService`, `ITaskSuggestionService`
+- **Services:** Business logic implementations
+- **Repository Abstractions:** `IRepository<T>`, `IProjectRepository`, etc.
+- **Depends on:** Domain only
+
+#### 3. **Infrastructure Layer** (Data Access)
+- **DbContext:** `PerformanceDbContext` with Fluent API configuration
+- **Repositories:** Generic + specific repository implementations
+- **Migrations:** EF Core database migrations
+- **Depends on:** Domain + Application
+
+#### 4. **UI Layer** (Presentation)
+- **Forms:** All Windows Forms UI
+- **Helpers:** `UiColors`, `UiHelpers`
+- **DI Container:** Configured in `Program.cs`
+- **Depends on:** All other layers
+
+### **Benefits of Clean Architecture**
+
+? **Testability** - Each layer can be tested independently  
+? **Maintainability** - Changes are isolated to specific layers  
+? **Flexibility** - Easy to swap implementations (e.g., SQL ? NoSQL)  
+? **Domain Purity** - Core business logic has zero dependencies  
+? **Scalability** - Can add Web API, Mobile app without changing domain  
 
 ---
 
@@ -437,9 +543,32 @@ services.AddScoped<ITaskSuggestionService, EnhancedTaskSuggestionService>();
 
 ---
 
-## ?? Known Issues
+## ?? Common Issues
 
-None currently! All features tested and working.
+### Issue: "A project with an Output Type of Class Library cannot be started directly"
+
+**Cause:** You're trying to run a Class Library project (Domain, Application, or Infrastructure) instead of the UI project.
+
+**Solution:**
+
+#### Visual Studio:
+1. Right-click **`Performance`** project (under `src/Performance.UI`) in Solution Explorer
+2. Select **"Set as Startup Project"**
+3. Press F5
+
+#### Command Line:
+```bash
+dotnet run --project src/Performance.UI
+```
+
+#### Using Batch File:
+```bash
+Run-Performance.bat
+```
+
+### Build Warnings
+
+The solution may show 21-22 nullable reference warnings (CS8602, CS8618). These are **not critical** and don't affect functionality. They're related to C# 8.0's nullable reference types feature.
 
 ---
 
@@ -526,10 +655,19 @@ For issues or questions:
 
 ---
 
-**Last Updated:** December 28, 2024  
-**Version:** 1.0.0  
+**Last Updated:** January 1, 2026  
+**Version:** 1.0.0 (Clean Architecture)  
 **Build:** ? Successful  
-**Status:** ?? Production Ready
+**Status:** ? Production Ready  
+**Architecture:** ? Clean Architecture Compliant
+
+---
+
+## ?? Additional Documentation
+
+- **[Clean Architecture Completion Report](Documentation/CLEAN_ARCHITECTURE_COMPLETION.md)** - Detailed implementation guide
+- **[Clean Architecture Status](Documentation/CLEAN_ARCHITECTURE_STATUS.md)** - Quick status summary  
+- **[Workspace Information](Documentation/WORKSPACE_INFORMATION.md)** - Project details
 
 ---
 
@@ -551,25 +689,48 @@ Employee:
 Server=localhost;Database=PerformanceDb;Trusted_Connection=True;Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=true
 ```
 
-### Build Commands
+## ??? Build Commands
+
+### Build Solution
 ```bash
-# Restore packages
-dotnet restore
-
-# Build solution
 dotnet build Performance.sln
+```
 
-# Run application
-dotnet run --project Performance
+### Run Application
+```bash
+# Option 1: Batch file (easiest)
+Run-Performance.bat
 
-# Create migration
-dotnet ef migrations add <MigrationName> --project Performance.Infrastructure --startup-project Performance
+# Option 2: Direct run
+dotnet run --project src/Performance.UI
+
+# Option 3: Build then run
+dotnet build Performance.sln --configuration Release
+dotnet run --project src/Performance.UI --no-build
+```
+
+### Database Migrations
+```bash
+# Add migration
+dotnet ef migrations add <MigrationName> \
+  --project src/Performance.Infrastructure \
+  --startup-project src/Performance.UI
 
 # Update database
-dotnet ef database update --project Performance.Infrastructure --startup-project Performance
+dotnet ef database update \
+  --project src/Performance.Infrastructure \
+  --startup-project src/Performance.UI
 
 # Remove last migration
-dotnet ef migrations remove --project Performance.Infrastructure --startup-project Performance
+dotnet ef migrations remove \
+  --project src/Performance.Infrastructure \
+  --startup-project src/Performance.UI
+```
+
+### Clean & Rebuild
+```bash
+dotnet clean Performance.sln
+dotnet build Performance.sln --no-incremental
 ```
 
 ---
