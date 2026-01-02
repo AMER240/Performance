@@ -393,8 +393,7 @@ namespace Performance
         private async Task AddProject_Click()
         {
             using var scope = _serviceProvider.CreateScope();
-            var projectService = scope.ServiceProvider.GetRequiredService<IProjectService>();
-            var form = new ProjectEditForm(projectService, _authenticatedUser);
+            var form = scope.ServiceProvider.GetRequiredService<ProjectEditForm>();
             if (form.ShowDialog(this) == DialogResult.OK)
             {
                 await RefreshProjects(_txtSearch.Text);
@@ -406,8 +405,7 @@ namespace Performance
         {
             if (_selectedProject == null) return;
             using var scope = _serviceProvider.CreateScope();
-            var projectService = scope.ServiceProvider.GetRequiredService<IProjectService>();
-            var form = new ProjectEditForm(projectService, _authenticatedUser);
+            var form = scope.ServiceProvider.GetRequiredService<ProjectEditForm>();
             form.LoadProject(_selectedProject);
             if (form.ShowDialog(this) == DialogResult.OK)
             {

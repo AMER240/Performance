@@ -59,8 +59,12 @@ namespace Performance
                     // Register HttpClient for Gemini API
                     services.AddSingleton<HttpClient>();
                     
-                    // AI Services - Enhanced (uses repositories)
-                    services.AddScoped<ITaskSuggestionService, EnhancedTaskSuggestionService>();
+                    // AI Services (Clean Architecture - Application Layer)
+                    // Use GeminiTaskSuggestionService for AI-powered task suggestions
+                    services.AddScoped<ITaskSuggestionService, GeminiTaskSuggestionService>();
+                    
+                    // AI Project Suggestion Service
+                    services.AddScoped<IProjectSuggestionService, GeminiProjectSuggestionService>();
                     
                     // Business Services (Clean Architecture - Application Layer)
                     services.AddScoped<IUserService, UserService>();
@@ -70,6 +74,8 @@ namespace Performance
                     // Forms
                     services.AddScoped<LoginForm>();
                     services.AddScoped<ProjectListForm>();
+                    services.AddScoped<ProjectEditForm>();  // ← AI desteği için eklendi
+                    services.AddScoped<TaskListForm>();
                 });
 
             var host = builder.Build();

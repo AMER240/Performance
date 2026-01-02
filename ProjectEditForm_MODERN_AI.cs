@@ -70,41 +70,41 @@ namespace Performance
             };
 
             // Project Name
-            var lblName = new Label()
-            {
-                Text = "Project Name:",
-                Left = 0,
-                Top = 10,
+            var lblName = new Label() 
+            { 
+                Text = "Project Name:", 
+                Left = 0, 
+                Top = 10, 
                 Width = 660,
                 ForeColor = UiColors.PrimaryText,
                 Font = new Font("Segoe UI", 10F, FontStyle.Bold)
             };
-
-            txtName = new TextBox()
-            {
-                Left = 0,
-                Top = 35,
+            
+            txtName = new TextBox() 
+            { 
+                Left = 0, 
+                Top = 35, 
                 Width = 660,
                 Font = new Font("Segoe UI", 10F)
             };
             UiHelpers.StyleTextBox(txtName);
 
             // Description
-            var lblDesc = new Label()
-            {
-                Text = "Description:",
-                Left = 0,
-                Top = 75,
+            var lblDesc = new Label() 
+            { 
+                Text = "Description:", 
+                Left = 0, 
+                Top = 75, 
                 Width = 660,
                 ForeColor = UiColors.PrimaryText,
                 Font = new Font("Segoe UI", 10F, FontStyle.Bold)
             };
-
-            txtDesc = new TextBox()
-            {
-                Left = 0,
-                Top = 100,
-                Width = 660,
+            
+            txtDesc = new TextBox() 
+            { 
+                Left = 0, 
+                Top = 100, 
+                Width = 660, 
                 Height = 80,
                 Multiline = true,
                 Font = new Font("Segoe UI", 10F)
@@ -295,7 +295,7 @@ namespace Performance
                 {
                     if (string.IsNullOrWhiteSpace(txtName.Text))
                     {
-                        MessageBox.Show("Please enter a project name first.", "Info",
+                        MessageBox.Show("Please enter a project name first.", "Info", 
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
                         txtName.Focus();
                         return;
@@ -363,21 +363,21 @@ namespace Performance
             // ??????????????????????????????????????????????????
             if (isManager)
             {
-                var lblNotes = new Label()
-                {
-                    Text = "Manager Notes:",
-                    Left = 0,
-                    Top = currentTop,
+                var lblNotes = new Label() 
+                { 
+                    Text = "Manager Notes:", 
+                    Left = 0, 
+                    Top = currentTop, 
                     Width = 660,
                     ForeColor = UiColors.PrimaryText,
                     Font = new Font("Segoe UI", 10F, FontStyle.Bold)
                 };
-
-                txtManagerNotes = new TextBox()
-                {
-                    Left = 0,
-                    Top = currentTop + 25,
-                    Width = 660,
+                
+                txtManagerNotes = new TextBox() 
+                { 
+                    Left = 0, 
+                    Top = currentTop + 25, 
+                    Width = 660, 
                     Height = 80,
                     Multiline = true,
                     Font = new Font("Segoe UI", 10F)
@@ -396,18 +396,18 @@ namespace Performance
                 BackColor = UiColors.MediumGreen
             };
 
-            var btnSave = new Button()
-            {
-                Text = "Save",
-                Width = 100,
+            var btnSave = new Button() 
+            { 
+                Text = "Save", 
+                Width = 100, 
                 Height = 35,
                 Left = 480,
                 Top = 12
             };
-            var btnCancel = new Button()
-            {
-                Text = "Cancel",
-                Width = 100,
+            var btnCancel = new Button() 
+            { 
+                Text = "Cancel", 
+                Width = 100, 
                 Height = 35,
                 Left = 590,
                 Top = 12
@@ -415,7 +415,7 @@ namespace Performance
 
             btnSave.Click += async (s, e) => await Save_Click();
             btnCancel.Click += (s, e) => { this.DialogResult = DialogResult.Cancel; this.Close(); };
-
+            
             UiHelpers.ApplyButtonStyle(btnSave);
             UiHelpers.ApplyButtonStyle(btnCancel);
 
@@ -425,7 +425,7 @@ namespace Performance
             this.Controls.Add(mainPanel);
             this.Controls.Add(titlePanel);
             this.Controls.Add(bottomPanel);
-
+            
             this.ResumeLayout(false);
         }
 
@@ -453,10 +453,10 @@ namespace Performance
             {
                 if (_project == null)
                 {
-                    var p = new ProjectEntity
-                    {
-                        Name = txtName.Text.Trim(),
-                        Description = txtDesc.Text.Trim(),
+                    var p = new ProjectEntity 
+                    { 
+                        Name = txtName.Text.Trim(), 
+                        Description = txtDesc.Text.Trim(), 
                         CreatedAt = DateTime.UtcNow,
                         ManagerNotes = _currentUser?.Role == UserRole.Manager ? txtManagerNotes?.Text?.Trim() : null
                     };
