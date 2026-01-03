@@ -8,4 +8,44 @@ obj/
 *.vsidx-journal
 *.vscode/
 .idea/
-Performance/appsettings.json
+
+# Configuration files with API keys (CRITICAL - DO NOT COMMIT!)
+**/appsettings.json
+!**/appsettings.example.json
+
+# Backup files (Visual Studio auto-generated)
+*.Backup.tmp
+*.Backup*.tmp
+*.bak
+*.backup
+
+# Publish directory
+publish/
+dist/
+
+# Database files
+*.mdf
+*.ldf
+*.db
+
+# Temporary files
+*.tmp
+*.temp
+~$*
+
+# Logs
+*.log
+logs/
+
+# NuGet packages
+packages/
+*.nupkg
+
+# Test results
+TestResults/
+[Tt]est[Rr]esult*/
+
+# User secrets
+secrets.json
+appsettings.Development.json
+appsettings.Production.json

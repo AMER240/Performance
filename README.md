@@ -63,11 +63,14 @@ dotnet run --project src/Performance.UI --no-build
 
 **Tech Stack:**
 - .NET 8
-- Windows Forms + DevExpress XtraForms
+- Windows Forms + DevExpress XtraForms v25.1
 - Entity Framework Core 8.0.0
 - SQL Server (LocalDB)
-- Gemini AI API (2.5-flash model)
+- **Google Gemini AI 2.5 Flash** (Cloud-based NLP)
 - Clean Architecture Pattern
+- Repository Pattern
+- Dependency Injection
+- SHA-256 Password Hashing
 
 ---
 
@@ -425,65 +428,126 @@ Info:           #0DCAF0
 
 ## ?? AI Features
 
-### **EnhancedTaskSuggestionService**
+### **Google Gemini AI Integration** ?
 
-**AI Engine Type:** On-Premise Machine Learning (No external API)
+**AI Engine Type:** Cloud-based Natural Language Processing (Gemini 2.5 Flash)
 
-#### **Techniques Used:**
-1. **Jaccard Similarity Algorithm**
-   - Word-based text comparison
-   - Minimum 30% similarity threshold
-   - Analyzes top 100 completed tasks
+#### **Services:**
 
-2. **Historical Data Analysis**
-   - Learns from completed tasks
-   - Pattern recognition
-   - User performance tracking
+1. **GeminiTaskSuggestionService**
+   - AI-powered task analysis
+   - Priority prediction (Low/Medium/High)
+   - Estimated duration calculation
+   - Smart user assignment
+   - Context-aware explanations
 
-3. **Natural Language Processing (NLP)**
-   - Keyword detection (urgent, critical, research, bug)
-   - Text preprocessing & tokenization
-   - Context understanding
-
-4. **Statistical Analysis**
-   - Average duration calculation
-   - Priority trend analysis
-   - User assignment optimization
+2. **GeminiProjectSuggestionService**
+   - Project planning assistance
+   - Feature suggestions
+   - Recommended tasks breakdown
+   - Required roles analysis
+   - Team composition recommendations
 
 #### **Features:**
-- ? **Priority Suggestion** (Low, Medium, High)
-- ? **Duration Estimation** (hours)
-- ? **User Assignment** (best fit based on history)
-- ? **Explanation** (reasoning behind suggestions)
+- ?? **Smart Priority Detection** - Analyzes description to determine urgency
+- ? **Duration Estimation** - Predicts hours needed based on task complexity
+- ?? **User Assignment** - Recommends best team member based on role & sector
+- ?? **Project Analysis** - Generates complete project breakdown
+- ?? **Historical Learning** - Uses past completed tasks for better accuracy
+- ?? **Natural Language Understanding** - Gemini AI processes task descriptions
 
-#### **Algorithm Flow:**
+#### **Configuration:**
+```json
+{
+  "GeminiAI": {
+    "ApiKey": "YOUR_GEMINI_API_KEY_HERE",
+    "Model": "gemini-2.5-flash"
+  }
+}
 ```
-1. Get task description
-    ?
-2. Fetch last 100 completed tasks
-    ?
-3. Calculate similarity (Jaccard)
-    ?
-4. Find top 10 similar tasks
-    ?
-5. Analyze patterns:
-   - Average priority
-   - Average duration
-   - Successful assignees
-    ?
-6. Apply keyword rules:
-   - "urgent" ? High priority
-   - "research" ? Low priority, 2x duration
-   - "bug" ? High priority
-    ?
-7. Return suggestion + explanation
+
+#### **API Endpoints Used:**
+- `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent`
+- `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent` (fallback)
+
+#### **Example AI Workflow:**
+
+**Task Suggestion:**
 ```
+Input:
+  Task: "Implement payment gateway with Stripe"
+  
+AI Analysis:
+  ? Priority: High
+  ? Duration: 12.0 hours
+  ? Assigned: Backend Developer (John Doe)
+  ? Reasoning: "Payment integration is critical and requires backend expertise"
+```
+
+**Project Suggestion:**
+```
+Input:
+  Project: "Mobile Banking App"
+  Description: "iOS and Android mobile banking"
+  
+AI Analysis:
+  ? Features: User auth, account management, transfers, notifications
+  ? Tasks: UI/UX design, API development, security implementation
+  ? Roles: Mobile developer, backend engineer, security specialist
+  ? Team: 1 PM, 2 mobile devs, 1 backend dev, 1 QA engineer
+```
+
+#### **How to Get API Key:**
+1. Visit [Google AI Studio](https://aistudio.google.com/app/apikey)
+2. Sign in with Google account
+3. Create API key
+4. Add to `appsettings.json`
+
+**Note:** Gemini AI API is free for development with generous rate limits!
 
 ---
 
 ## ?? Recent Updates
 
-### **Latest Commits (Last 10)**
+### **Latest Features & Fixes**
+
+#### **January 2026 - Major Updates**
+
+**? AI Integration (Google Gemini)**
+- ?? Implemented GeminiTaskSuggestionService for smart task analysis
+- ?? Added GeminiProjectSuggestionService for project planning
+- ?? Real-time AI suggestions with explanations
+- ? API key configuration support
+- ? Fallback endpoints for reliability
+
+**? Navigation Property Fixes**
+- ?? Fixed "Unknown Project" issue by adding `.Include()` to repository
+- ?? Fixed "Unassigned" issue with proper user loading
+- ?? TaskRepository now loads Project and AssignedToUser automatically
+- ?? Eliminated N+1 query problems
+
+**? UI/UX Improvements**
+- ?? Added null-check for `_statsPanel.RefreshStatistics()` calls
+- ?? Fixed ObjectDisposedException in search timer
+- ?? Improved CancellationTokenSource handling with closure capture
+- ?? Better disposed form checks
+- ?? TaskListForm filter logic implemented (Status, Priority, Search)
+
+**? Code Quality**
+- ?? Removed excessive disposed checks
+- ?? Simplified BtnEdit_Click handlers
+- ?? Added proper exception handling
+- ?? Improved async/await patterns
+- ?? Fixed memory leaks in timer disposal
+
+**? Bug Fixes**
+- ? Fixed "Task with ID X not found" error
+- ? Fixed "Connection is closed" error
+- ? Fixed "Cannot access a disposed object" error
+- ? Fixed ApplyFilters method missing implementation
+- ? Fixed search box causing ObjectDisposedException
+
+### **Previous Commits**
 
 #### **796f97e** - Button Layout Fix (Employee)
 - ? TaskListForm: Move "View Details" and "Refresh" buttons left for employees
@@ -498,21 +562,6 @@ Info:           #0DCAF0
 - ? TaskDetailForm: Show username instead of user ID
 - ? TaskDetailForm: Hide edit button for employees
 - ? TaskListForm: Hide Add/Edit/Delete buttons for employees
-
-#### **a83bbcc** - Dashboard Icon Update
-- ? Unicode emojis: ?? ?? ? ? ??
-
-#### **ee4f611** - Refactor Password Management
-- ? Remove "Change Password" from UserManagementForm
-- ? Available in MainForm for all users
-
-#### **2960ace** - Dashboard + Change Password
-- ? Fix dashboard emoji display
-- ? Add "Change Password" button for all users
-
-#### **6231297** - UI Improvements
-- ? Remove default credentials from LoginForm
-- ? Hide ID columns in grids
 
 ### **Database Migrations**
 
@@ -662,8 +711,8 @@ For issues or questions:
 
 ---
 
-**Last Updated:** January 1, 2026  
-**Version:** 1.0.0 (Clean Architecture)  
+**Last Updated:** January 2, 2026  
+**Version:** 1.1.0 (Gemini AI Integration)  
 **Build:** ? Successful  
 **Status:** ? Production Ready  
 **Architecture:** ? Clean Architecture Compliant
