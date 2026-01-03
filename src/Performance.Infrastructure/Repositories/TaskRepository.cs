@@ -18,6 +18,21 @@ namespace Performance.Infrastructure.Repositories
         {
         }
 
+        public override async Task<TaskEntity?> GetByIdAsync(int id)
+        {
+            try
+            {
+                return await _dbSet
+                    .Include(t => t.Project)
+                    .Include(t => t.AssignedToUser)
+                    .FirstOrDefaultAsync(t => t.Id == id);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         public async Task<List<TaskEntity>> GetCompletedTasksAsync(int? projectId = null, int maxCount = 100)
         {
             var query = _dbSet
@@ -39,6 +54,7 @@ namespace Performance.Infrastructure.Repositories
         {
             return await _dbSet
                 .Where(t => t.ProjectId == projectId && !t.IsDeleted)
+                .Include(t => t.Project)
                 .Include(t => t.AssignedToUser)
                 .OrderByDescending(t => t.CreatedAt)
                 .ToListAsync();

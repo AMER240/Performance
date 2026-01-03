@@ -106,17 +106,30 @@ namespace Performance
             };
             _txtSearch.TextChanged += (s, e) =>
             {
-                _searchCancellation?.Cancel();
+                // Cancel previous operation safely
+                try
+                {
+                    _searchCancellation?.Cancel();
+                    _searchCancellation?.Dispose();
+                }
+                catch { }
+                
                 _searchCancellation = new System.Threading.CancellationTokenSource();
+                var currentCts = _searchCancellation; // Capture current token
 
+                // Dispose old timer
                 _searchTimer?.Dispose();
+                
                 _searchTimer = new System.Threading.Timer(async _ =>
                 {
-                    if (!_searchCancellation.Token.IsCancellationRequested)
+                    if (!currentCts.Token.IsCancellationRequested) // Use captured token
                     {
                         try
                         {
-                            await this.Invoke(async () => await RefreshProjects(_txtSearch.Text));
+                            if (!this.IsDisposed)
+                            {
+                                await this.Invoke(async () => await RefreshProjects(_txtSearch.Text));
+                            }
                         }
                         catch { }
                     }
@@ -261,7 +274,8 @@ namespace Performance
             await RefreshProjects();
 
             _statsPanel?.SetCurrentUser(_authenticatedUser);
-            await _statsPanel.RefreshStatistics();
+           if (_statsPanel != null)
+               await _statsPanel.RefreshStatistics();
         }
 
         private async Task RefreshProjects(string? filter = null)
@@ -408,7 +422,9 @@ namespace Performance
             taskList.ShowDialog(this);
             
             await RefreshProjects(_txtSearch.Text);
-            await _statsPanel.RefreshStatistics();
+            // statsPanel null kontrolü kald?r?ld?
+            if (_statsPanel != null)
+                await _statsPanel.RefreshStatistics();
         }
 
         private async Task AddProject_Click()
@@ -418,7 +434,8 @@ namespace Performance
             if (form.ShowDialog(this) == DialogResult.OK)
             {
                 await RefreshProjects(_txtSearch.Text);
-                await _statsPanel.RefreshStatistics();
+                if (_statsPanel != null)
+                    await _statsPanel.RefreshStatistics();
             }
         }
 
@@ -431,7 +448,8 @@ namespace Performance
             if (form.ShowDialog(this) == DialogResult.OK)
             {
                 await RefreshProjects(_txtSearch.Text);
-                await _statsPanel.RefreshStatistics();
+                if (_statsPanel != null)
+                    await _statsPanel.RefreshStatistics();
             }
         }
 
@@ -452,7 +470,8 @@ namespace Performance
                 _btnEditProject.Enabled = false;
                 _btnDeleteProject.Enabled = false;
                 await RefreshProjects(_txtSearch.Text);
-                await _statsPanel.RefreshStatistics();
+                if (_statsPanel != null)
+                    await _statsPanel.RefreshStatistics();
             }
             catch (Exception ex)
             {
