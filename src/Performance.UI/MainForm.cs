@@ -250,7 +250,7 @@ namespace Performance
         {
             try
             {
-                var projects = await _projectService.ListAsync();
+                var projects = await _projectService.ListAsync(includeTasks: true);
                 if (!string.IsNullOrWhiteSpace(filter))
                 {
                     filter = filter.Trim().ToLowerInvariant();

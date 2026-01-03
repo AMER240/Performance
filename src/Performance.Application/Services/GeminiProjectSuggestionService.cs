@@ -54,34 +54,63 @@ namespace Performance.Application.Services
 
         private string BuildProjectPrompt(string projectName, string projectDescription)
         {
-            var prompt = $@"You are an AI project management consultant. Analyze the following project and provide comprehensive insights.
+            var prompt = $@"You are an expert project management consultant with deep experience in software development, 
+team composition, and project planning. Analyze the following project thoroughly and provide comprehensive, 
+detailed suggestions that demonstrate deep expertise.
 
 PROJECT NAME: {projectName}
 
 PROJECT DESCRIPTION: {projectDescription}
 
-Based on the project name and description, provide detailed suggestions in the following categories:
+Provide detailed and comprehensive suggestions for this project. Be specific, practical, and thorough. 
+Each section should have substantial content with clear explanations.
 
-1. **Suggested Features**: List 3-5 key features that this project should include. Be specific and practical.
+1. **SUGGESTED FEATURES** (provide 5-7 key features):
+   - List each feature with a brief explanation of its value
+   - Use bullet points (•)
+   - Be specific to this project type and context
+   - Include both core features and value-add features
+   
+2. **RECOMMENDED TASKS** (provide 6-8 initial tasks):
+   - Prioritize setup and foundational work
+   - Include both technical and planning tasks
+   - Specify deliverables for each task
+   - Use bullet points (•)
+   - Order by priority/dependency
+   
+3. **REQUIRED EMPLOYEE TYPES** (list 5-7 roles):
+   - Specify exact job titles and specializations
+   - Include quantity needed (e.g., Backend Developer x2, Senior Frontend Developer x1)
+   - Mention key skills required for each role
+   - Use bullet points (•)
+   
+4. **TEAM COMPOSITION** (provide detailed breakdown):
+   - Total team size recommendation with reasoning
+   - Duration estimate (in months) with justification
+   - Detailed role breakdown with specific responsibilities
+   - Consider project phases (planning, development, testing, deployment)
+   - Use bullet points (•) for structure
+   
+5. **AI INSIGHTS** (provide 3-5 paragraphs of strategic advice):
+   - Technology stack recommendations with specific tools/frameworks
+   - Potential challenges specific to this project type and how to mitigate them
+   - Best practices and industry standards relevant to this project
+   - Success factors and key milestones to track
+   - Risk management and quality assurance strategies
 
-2. **Recommended Tasks**: List 3-5 initial tasks to start the project. Prioritize setup and foundational work.
+Be detailed, comprehensive, and professional. Provide actionable insights that would be valuable 
+for an experienced project manager. Each section should demonstrate deep understanding of the project context.
 
-3. **Required Employee Types**: List the types of employees/roles needed (e.g., Backend Developer, UI/UX Designer, QA Tester).
-
-4. **Team Composition**: Suggest the ideal team size and composition (how many of each role, estimated project duration).
-
-5. **Insights**: Provide 2-3 sentences of strategic advice or considerations for this project.
-
-IMPORTANT: Respond in this exact JSON format (no additional text, no markdown):
+IMPORTANT: Respond ONLY in this exact JSON format (no markdown, no additional text):
 {{
-  ""suggestedFeatures"": ""• Feature 1\n• Feature 2\n• Feature 3"",
-  ""recommendedTasks"": ""• Task 1\n• Task 2\n• Task 3"",
-  ""requiredEmployeeTypes"": ""• Role 1\n• Role 2\n• Role 3"",
-  ""teamComposition"": ""Team Size: X members\nDuration: Y months\n• Role breakdown here"",
-  ""insights"": ""Your strategic insights and recommendations here.""
+  ""suggestedFeatures"": ""• Feature 1: Detailed explanation\n• Feature 2: Detailed explanation\n• Feature 3: Detailed explanation\n• Feature 4: Detailed explanation\n• Feature 5: Detailed explanation"",
+  ""recommendedTasks"": ""• Task 1: With deliverable\n• Task 2: With deliverable\n• Task 3: With deliverable\n• Task 4: With deliverable\n• Task 5: With deliverable\n• Task 6: With deliverable"",
+  ""requiredEmployeeTypes"": ""• Role 1 (quantity): Key skills\n• Role 2 (quantity): Key skills\n• Role 3 (quantity): Key skills\n• Role 4 (quantity): Key skills\n• Role 5 (quantity): Key skills"",
+  ""teamComposition"": ""Team Size: X members (reasoning)\nDuration: Y months (justification)\n\nRole Breakdown:\n• Role 1: Specific responsibilities\n• Role 2: Specific responsibilities\n• Role 3: Specific responsibilities"",
+  ""insights"": ""Paragraph 1: Technology recommendations with specific tools.\n\nParagraph 2: Challenges and mitigation strategies.\n\nParagraph 3: Best practices and success factors.\n\nParagraph 4: Risk management approach.""
 }}
 
-Use bullet points (•) for lists. Keep each item concise but informative.";
+Use bullet points (•) for all lists. Provide substantial, detailed content in each section.";
 
             return prompt;
         }

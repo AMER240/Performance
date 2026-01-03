@@ -356,10 +356,25 @@ namespace Performance
         {
             if (_projectId == 0) return;
 
-            //  Include relations to avoid N+1 problem
-            var tasks = await _taskService.ListByProjectAsync(_projectId, includeRelations: true);
-            _grid.DataSource = tasks;
-            UpdateTaskCount(tasks.Count);
+            try
+            {
+                // Include relations to avoid N+1 problem
+                var tasks = await _taskService.ListByProjectAsync(_projectId, includeRelations: true);
+
+                // Ensure grid is not disposed
+                if (_grid.IsDisposed) return;
+
+                _grid.DataSource = tasks;
+                UpdateTaskCount(tasks.Count);
+            }
+            catch (Exception ex)
+            {
+                if (!this.IsDisposed)
+                {
+                    MessageBox.Show($"Failed to load tasks: {ex.Message}", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
 
         private async Task ApplyFilters()

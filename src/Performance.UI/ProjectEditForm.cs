@@ -35,7 +35,7 @@ namespace Performance
         {
             this.SuspendLayout();
             bool isManager = _currentUser?.Role == UserRole.Manager;
-            int height = isManager ? 850 : 750;  // Increased for scrollable AI panel
+            int height = isManager ? 900 : 800;
             this.ClientSize = new System.Drawing.Size(700, height);
             this.Name = "ProjectEditForm";
             this.Text = "Project Editor";
@@ -120,8 +120,7 @@ namespace Performance
             int currentTop = 190;
 
             // ??????????????????????????????????????????????????
-            // ?   MODERN AI PROJECT INSIGHTS PANEL             ?
-            // ?  (With Gradient Header & Scrollable Results)   ?
+            // ?   AI PANEL - NO BORDERS, ONLY COLORED TITLES   ?
             // ??????????????????????????????????????????????????
             if (_projectSuggestionService != null)
             {
@@ -130,12 +129,12 @@ namespace Performance
                     Left = 0,
                     Top = currentTop,
                     Width = 660,
-                    Height = 450,
-                    BackColor = Color.FromArgb(245, 245, 245),
+                    Height = 500,
+                    BackColor = Color.FromArgb(250, 250, 250),
                     BorderStyle = BorderStyle.FixedSingle
                 };
 
-                //  GRADIENT HEADER PANEL
+                // Gradient Header
                 var headerPanel = new Panel()
                 {
                     Left = 0,
@@ -144,13 +143,12 @@ namespace Performance
                     Height = 50
                 };
 
-                // Paint gradient background
                 headerPanel.Paint += (s, e) =>
                 {
                     using (var brush = new LinearGradientBrush(
                         headerPanel.ClientRectangle,
-                        Color.FromArgb(67, 160, 71),    // #43A047
-                        Color.FromArgb(27, 94, 32),     // #1B5E20
+                        Color.FromArgb(67, 160, 71),
+                        Color.FromArgb(27, 94, 32),
                         LinearGradientMode.Horizontal))
                     {
                         e.Graphics.FillRectangle(brush, headerPanel.ClientRectangle);
@@ -171,7 +169,7 @@ namespace Performance
 
                 var btnGetSuggestions = new Button()
                 {
-                    Text = "Project analyze",
+                    Text = "Analyze your project",
                     Left = 500,
                     Top = 10,
                     Width = 145,
@@ -187,112 +185,89 @@ namespace Performance
                 headerPanel.Controls.Add(lblAiTitle);
                 headerPanel.Controls.Add(btnGetSuggestions);
 
-                //  PROGRESS BAR
+                // Progress Bar
                 var progressBar = new ProgressBar()
                 {
                     Left = 0,
                     Top = 50,
                     Width = 660,
-                    Height = 10,
+                    Height = 8,
                     Style = ProgressBarStyle.Marquee,
                     MarqueeAnimationSpeed = 30,
                     Visible = false
                 };
 
-                //  SCROLLABLE RESULTS CONTAINER
-                var resultsContainer = new Panel()
+                // SCROLLABLE RESULTS - NO BORDERS!
+                var resultsPanel = new Panel()
                 {
-                    Left = 10,
-                    Top = 60,
-                    Width = 640,
-                    Height = 380,
+                    Left = 0,
+                    Top = 58,
+                    Width = 660,
+                    Height = 442,
                     AutoScroll = true,
-                    BackColor = Color.FromArgb(250, 250, 250)
+                    BackColor = Color.White
                 };
 
-                // Helper function to create result boxes
-                Panel CreateResultBox(string icon, string title, Color categoryColor, int top)
+                // Helper to create section (NO BOX, just colored title + content)
+                Label CreateSection(string icon, string title, Color color, int top)
                 {
-                    var box = new Panel()
-                    {
-                        Left = 5,
-                        Top = top,
-                        Width = 600,
-                        Height = 70,
-                        BackColor = Color.White,
-                        BorderStyle = BorderStyle.None,
-                        Visible = false
-                    };
-
-                    // Custom border with category color
-                    box.Paint += (s, e) =>
-                    {
-                        using (var pen = new Pen(categoryColor, 2))
-                        {
-                            e.Graphics.DrawRectangle(pen, 0, 0, box.Width - 1, box.Height - 1);
-                        }
-                    };
-
-                    var lblHeader = new Label()
+                    var lblTitle = new Label()
                     {
                         Text = $"{icon} {title}",
-                        Left = 10,
-                        Top = 8,
-                        Width = 580,
-                        Height = 20,
+                        Left = 15,
+                        Top = top,
+                        Width = 620,
+                        Height = 25,
                         Font = new Font("Segoe UI", 11F, FontStyle.Bold),
-                        ForeColor = categoryColor
+                        ForeColor = color,
+                        BackColor = Color.Transparent
                     };
 
                     var lblContent = new Label()
                     {
                         Text = "",
-                        Left = 10,
-                        Top = 32,
-                        Width = 580,
-                        Height = 30,
+                        Left = 15,
+                        Top = top + 28,
+                        Width = 620,
+                        Height = 60,
                         Font = new Font("Segoe UI", 9F),
-                        ForeColor = Color.FromArgb(60, 60, 60)
+                        ForeColor = Color.FromArgb(60, 60, 60),
+                        BackColor = Color.Transparent,
+                        AutoSize = false
                     };
 
-                    box.Controls.Add(lblHeader);
-                    box.Controls.Add(lblContent);
-                    box.Tag = lblContent;  // Store for updates
+                    resultsPanel.Controls.Add(lblTitle);
+                    resultsPanel.Controls.Add(lblContent);
 
-                    return box;
+                    return lblContent;
                 }
 
-                var boxFeatures = CreateResultBox("[*]", "SUGGESTED FEATURES", Color.FromArgb(33, 150, 243), 5);
-                var boxTasks = CreateResultBox("[+]", "RECOMMENDED TASKS", Color.FromArgb(76, 175, 80), 85);
-                var boxRoles = CreateResultBox("[#]", "REQUIRED ROLES", Color.FromArgb(255, 152, 0), 165);
-                var boxTeam = CreateResultBox("[@]", "TEAM COMPOSITION", Color.FromArgb(156, 39, 176), 245);
-                var boxInsights = CreateResultBox("[!]", "AI INSIGHTS", Color.FromArgb(0, 150, 136), 325);
+                var lblFeatures = CreateSection("[*]", "SUGGESTED FEATURES", Color.FromArgb(33, 150, 243), 15);
+                var lblTasks = CreateSection("[+]", "RECOMMENDED TASKS", Color.FromArgb(76, 175, 80), 110);
+                var lblRoles = CreateSection("[#]", "REQUIRED ROLES", Color.FromArgb(255, 152, 0), 205);
+                var lblTeam = CreateSection("[@]", "TEAM COMPOSITION", Color.FromArgb(156, 39, 176), 300);
+                var lblInsights = CreateSection("[!]", "AI INSIGHTS", Color.FromArgb(0, 150, 136), 395);
 
-                resultsContainer.Controls.Add(boxFeatures);
-                resultsContainer.Controls.Add(boxTasks);
-                resultsContainer.Controls.Add(boxRoles);
-                resultsContainer.Controls.Add(boxTeam);
-                resultsContainer.Controls.Add(boxInsights);
-
-                // Empty state message
+                // Empty state
                 var lblEmptyState = new Label()
                 {
-                    Text = "Click 'Get Suggestions' to analyze your project with AI\n\nEnter a project name and description first for better results.",
+                    Text = "Click 'Get Suggestions' to analyze your project with AI\n\nEnter a project name and description first.",
                     Left = 50,
-                    Top = 150,
-                    Width = 500,
+                    Top = 200,
+                    Width = 560,
                     Height = 60,
                     TextAlign = ContentAlignment.MiddleCenter,
                     Font = new Font("Segoe UI", 10F, FontStyle.Italic),
-                    ForeColor = Color.Gray
+                    ForeColor = Color.Gray,
+                    BackColor = Color.Transparent
                 };
-                resultsContainer.Controls.Add(lblEmptyState);
+                resultsPanel.Controls.Add(lblEmptyState);
 
                 aiPanel.Controls.Add(headerPanel);
                 aiPanel.Controls.Add(progressBar);
-                aiPanel.Controls.Add(resultsContainer);
+                aiPanel.Controls.Add(resultsPanel);
 
-                //  BUTTON CLICK EVENT
+                // Button Click Event
                 btnGetSuggestions.Click += async (s, e) =>
                 {
                     if (string.IsNullOrWhiteSpace(txtName.Text))
@@ -306,15 +281,15 @@ namespace Performance
                     btnGetSuggestions.Enabled = false;
                     btnGetSuggestions.Text = "Analyzing...";
                     progressBar.Visible = true;
-                    lblEmptyState.Text = " AI is analyzing your project...\n\nPlease wait...";
+                    lblEmptyState.Text = " AI is analyzing...\n\nPlease wait...";
                     lblEmptyState.ForeColor = Color.FromArgb(67, 160, 71);
 
-                    // Hide all boxes
-                    boxFeatures.Visible = false;
-                    boxTasks.Visible = false;
-                    boxRoles.Visible = false;
-                    boxTeam.Visible = false;
-                    boxInsights.Visible = false;
+                    // Hide all content labels
+                    lblFeatures.Visible = false;
+                    lblTasks.Visible = false;
+                    lblRoles.Visible = false;
+                    lblTeam.Visible = false;
+                    lblInsights.Visible = false;
 
                     try
                     {
@@ -326,46 +301,45 @@ namespace Performance
                         // Hide empty state
                         lblEmptyState.Visible = false;
 
-                        // Update and show boxes with formatted content
-                        ((Label)boxFeatures.Tag!).Text = FormatListItems(result.SuggestedFeatures);
-                        boxFeatures.Visible = true;
+                        // Update and show content
+                        lblFeatures.Text = result.SuggestedFeatures;
+                        lblFeatures.Visible = true;
 
-                        ((Label)boxTasks.Tag!).Text = FormatListItems(result.RecommendedTasks);
-                        boxTasks.Visible = true;
+                        lblTasks.Text = result.RecommendedTasks;
+                        lblTasks.Visible = true;
 
-                        ((Label)boxRoles.Tag!).Text = FormatListItems(result.RequiredEmployeeTypes);
-                        boxRoles.Visible = true;
+                        lblRoles.Text = result.RequiredEmployeeTypes;
+                        lblRoles.Visible = true;
 
-                        ((Label)boxTeam.Tag!).Text = FormatListItems(result.TeamComposition);
-                        boxTeam.Visible = true;
+                        lblTeam.Text = result.TeamComposition;
+                        lblTeam.Visible = true;
 
-                        ((Label)boxInsights.Tag!).Text = result.Explanation.Replace(" Gemini AI Analysis: ", "");
-                        boxInsights.Visible = true;
+                        lblInsights.Text = result.Explanation.Replace(" Gemini AI Analysis: ", "");
+                        lblInsights.Height = 100;  // More space for insights
+                        lblInsights.Visible = true;
 
                         // Scroll to top
-                        resultsContainer.AutoScrollPosition = new Point(0, 0);
+                        resultsPanel.AutoScrollPosition = new Point(0, 0);
                     }
                     catch (Exception ex)
                     {
                         lblEmptyState.Visible = true;
-                        lblEmptyState.Text = $" Error: {ex.Message}\n\nCheck API key & internet connection";
+                        lblEmptyState.Text = $" Error: {ex.Message}\n\nCheck API key & connection";
                         lblEmptyState.ForeColor = Color.FromArgb(211, 47, 47);
                     }
                     finally
                     {
                         btnGetSuggestions.Enabled = true;
-                        btnGetSuggestions.Text = "Get Suggestions";
+                        btnGetSuggestions.Text = "Analyze your project";
                         progressBar.Visible = false;
                     }
                 };
 
                 mainPanel.Controls.Add(aiPanel);
-                currentTop += 460;
+                currentTop += 510;
             }
 
-            // ??????????????????????????????????????????????????
-            // ?       MANAGER NOTES (ONLY FOR MANAGERS)        ?
-            // ??????????????????????????????????????????????????
+            // Manager Notes
             if (isManager)
             {
                 var lblNotes = new Label()
@@ -432,19 +406,6 @@ namespace Performance
             this.Controls.Add(bottomPanel);
 
             this.ResumeLayout(false);
-        }
-
-        // Helper to format bullet points
-        private string FormatListItems(string text)
-        {
-            if (string.IsNullOrWhiteSpace(text)) return text;
-
-            // Replace common bullet formats with •
-            text = text.Replace("• ", "• ");
-            text = text.Replace("- ", "• ");
-            text = text.Replace("* ", "• ");
-
-            return text;
         }
 
         public void LoadProject(ProjectEntity project)

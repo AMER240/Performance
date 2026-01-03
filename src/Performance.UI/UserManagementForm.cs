@@ -17,6 +17,7 @@ namespace Performance
         private readonly IServiceProvider _serviceProvider;
         private DataGridView _grid = new DataGridView();
         private UserEntity? _currentUser;
+        private System.Threading.CancellationTokenSource? _loadCancellation;
 
         public UserManagementForm(IUserService userService, UserEntity? currentUser, IServiceProvider? serviceProvider = null)
         {
@@ -168,8 +169,26 @@ namespace Performance
             this.Controls.Add(topPanel);
             this.Controls.Add(bottomPanel);
 
-            this.Load += async (s, e) => await RefreshList();
+            this.Load += UserManagementForm_Load;
+            this.FormClosing += (s, e) =>
+            {
+                _loadCancellation?.Cancel();
+                _loadCancellation?.Dispose();
+            };
             this.ResumeLayout(false);
+        }
+
+        private async void UserManagementForm_Load(object? sender, EventArgs e)
+        {
+            _loadCancellation = new System.Threading.CancellationTokenSource();
+            try
+            {
+                await LoadUsers(_loadCancellation.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                // Form closed before load completed - this is OK
+            }
         }
 
         private void Grid_CellFormatting(object? sender, DataGridViewCellFormattingEventArgs e)
@@ -191,14 +210,46 @@ namespace Performance
 
         private async Task RefreshList()
         {
+            _loadCancellation?.Cancel();
+            _loadCancellation = new System.Threading.CancellationTokenSource();
             try
             {
+                await LoadUsers(_loadCancellation.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                // Refresh cancelled - ignore
+            }
+        }
+
+        private async Task LoadUsers(System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                _grid.DataSource = null;  // Clear first
+
+                cancellationToken.ThrowIfCancellationRequested();
+
                 var users = await _userService.GetAllUsersAsync();
-                _grid.DataSource = users;
+
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (!_grid.IsDisposed)
+                {
+                    _grid.DataSource = users;
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to load users: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (!this.IsDisposed)
+                {
+                    MessageBox.Show($"Failed to load users: {ex.Message}", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
@@ -287,7 +338,12 @@ namespace Performance
                 var role = cmbRole.SelectedItem.ToString() == "Manager" ? UserRole.Manager : UserRole.Employee;
                 await _userService.CreateAsync(txtUsername.Text.Trim(), txtPassword.Text, role);
                 MessageBox.Show($"User '{txtUsername.Text}' created successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                await RefreshList();
+
+                // Only reload if form is still open
+                if (!this.IsDisposed && this.Visible)
+                {
+                    await RefreshList();
+                }
             }
             catch (Exception ex)
             {
