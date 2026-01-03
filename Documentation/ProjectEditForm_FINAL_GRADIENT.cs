@@ -71,41 +71,41 @@ namespace Performance
             };
 
             // Project Name
-            var lblName = new Label()
-            {
-                Text = "Project Name:",
-                Left = 0,
-                Top = 10,
+            var lblName = new Label() 
+            { 
+                Text = "Project Name:", 
+                Left = 0, 
+                Top = 10, 
                 Width = 640,
                 ForeColor = UiColors.PrimaryText,
                 Font = new Font("Segoe UI", 10F, FontStyle.Bold)
             };
-
-            txtName = new TextBox()
-            {
-                Left = 0,
-                Top = 35,
+            
+            txtName = new TextBox() 
+            { 
+                Left = 0, 
+                Top = 35, 
                 Width = 640,
                 Font = new Font("Segoe UI", 10F)
             };
             UiHelpers.StyleTextBox(txtName);
 
             // Description
-            var lblDesc = new Label()
-            {
-                Text = "Description:",
-                Left = 0,
-                Top = 75,
+            var lblDesc = new Label() 
+            { 
+                Text = "Description:", 
+                Left = 0, 
+                Top = 75, 
                 Width = 640,
                 ForeColor = UiColors.PrimaryText,
                 Font = new Font("Segoe UI", 10F, FontStyle.Bold)
             };
-
-            txtDesc = new TextBox()
-            {
-                Left = 0,
-                Top = 100,
-                Width = 640,
+            
+            txtDesc = new TextBox() 
+            { 
+                Left = 0, 
+                Top = 100, 
+                Width = 640, 
                 Height = 80,
                 Multiline = true,
                 Font = new Font("Segoe UI", 10F)
@@ -120,8 +120,8 @@ namespace Performance
             int currentTop = 190;
 
             // ??????????????????????????????????????????????????
-            // ?   MODERN AI PROJECT INSIGHTS PANEL             ?
-            // ?  (With Gradient Header & Scrollable Results)   ?
+            // ?  ?? MODERN AI PROJECT INSIGHTS PANEL          ?
+            // ?  (With Gradient Header & Scrollable Results)  ?
             // ??????????????????????????????????????????????????
             if (_projectSuggestionService != null)
             {
@@ -135,7 +135,7 @@ namespace Performance
                     BorderStyle = BorderStyle.FixedSingle
                 };
 
-                //  GRADIENT HEADER PANEL
+                // ? GRADIENT HEADER PANEL
                 var headerPanel = new Panel()
                 {
                     Left = 0,
@@ -171,7 +171,7 @@ namespace Performance
 
                 var btnGetSuggestions = new Button()
                 {
-                    Text = "Project analyze",
+                    Text = "Get Suggestions",
                     Left = 500,
                     Top = 10,
                     Width = 145,
@@ -187,7 +187,7 @@ namespace Performance
                 headerPanel.Controls.Add(lblAiTitle);
                 headerPanel.Controls.Add(btnGetSuggestions);
 
-                //  PROGRESS BAR
+                // ? PROGRESS BAR
                 var progressBar = new ProgressBar()
                 {
                     Left = 0,
@@ -199,7 +199,7 @@ namespace Performance
                     Visible = false
                 };
 
-                //  SCROLLABLE RESULTS CONTAINER
+                // ? SCROLLABLE RESULTS CONTAINER
                 var resultsContainer = new Panel()
                 {
                     Left = 10,
@@ -292,7 +292,7 @@ namespace Performance
                 aiPanel.Controls.Add(progressBar);
                 aiPanel.Controls.Add(resultsContainer);
 
-                //  BUTTON CLICK EVENT
+                // ? BUTTON CLICK EVENT
                 btnGetSuggestions.Click += async (s, e) =>
                 {
                     if (string.IsNullOrWhiteSpace(txtName.Text))
@@ -306,7 +306,7 @@ namespace Performance
                     btnGetSuggestions.Enabled = false;
                     btnGetSuggestions.Text = "Analyzing...";
                     progressBar.Visible = true;
-                    lblEmptyState.Text = " AI is analyzing your project...\n\nPlease wait...";
+                    lblEmptyState.Text = "? AI is analyzing your project...\n\nPlease wait...";
                     lblEmptyState.ForeColor = Color.FromArgb(67, 160, 71);
 
                     // Hide all boxes
@@ -339,7 +339,7 @@ namespace Performance
                         ((Label)boxTeam.Tag!).Text = FormatListItems(result.TeamComposition);
                         boxTeam.Visible = true;
 
-                        ((Label)boxInsights.Tag!).Text = result.Explanation.Replace(" Gemini AI Analysis: ", "");
+                        ((Label)boxInsights.Tag!).Text = result.Explanation.Replace("?? Gemini AI Analysis: ", "");
                         boxInsights.Visible = true;
 
                         // Scroll to top
@@ -348,7 +348,7 @@ namespace Performance
                     catch (Exception ex)
                     {
                         lblEmptyState.Visible = true;
-                        lblEmptyState.Text = $" Error: {ex.Message}\n\nCheck API key & internet connection";
+                        lblEmptyState.Text = $"? Error: {ex.Message}\n\nCheck API key & internet connection";
                         lblEmptyState.ForeColor = Color.FromArgb(211, 47, 47);
                     }
                     finally
@@ -364,25 +364,25 @@ namespace Performance
             }
 
             // ??????????????????????????????????????????????????
-            // ?       MANAGER NOTES (ONLY FOR MANAGERS)        ?
+            // ?  ?? MANAGER NOTES (ONLY FOR MANAGERS)        ?
             // ??????????????????????????????????????????????????
             if (isManager)
             {
-                var lblNotes = new Label()
-                {
-                    Text = "Manager Notes:",
-                    Left = 0,
-                    Top = currentTop,
+                var lblNotes = new Label() 
+                { 
+                    Text = "Manager Notes:", 
+                    Left = 0, 
+                    Top = currentTop, 
                     Width = 640,
                     ForeColor = UiColors.PrimaryText,
                     Font = new Font("Segoe UI", 10F, FontStyle.Bold)
                 };
-
-                txtManagerNotes = new TextBox()
-                {
-                    Left = 0,
-                    Top = currentTop + 25,
-                    Width = 640,
+                
+                txtManagerNotes = new TextBox() 
+                { 
+                    Left = 0, 
+                    Top = currentTop + 25, 
+                    Width = 640, 
                     Height = 80,
                     Multiline = true,
                     Font = new Font("Segoe UI", 10F)
@@ -401,18 +401,18 @@ namespace Performance
                 BackColor = UiColors.MediumGreen
             };
 
-            var btnSave = new Button()
-            {
-                Text = "Save",
-                Width = 100,
+            var btnSave = new Button() 
+            { 
+                Text = "Save", 
+                Width = 100, 
                 Height = 35,
                 Left = 420,
                 Top = 12
             };
-            var btnCancel = new Button()
-            {
-                Text = "Cancel",
-                Width = 100,
+            var btnCancel = new Button() 
+            { 
+                Text = "Cancel", 
+                Width = 100, 
                 Height = 35,
                 Left = 530,
                 Top = 12
@@ -420,7 +420,7 @@ namespace Performance
 
             btnSave.Click += async (s, e) => await Save_Click();
             btnCancel.Click += (s, e) => { this.DialogResult = DialogResult.Cancel; this.Close(); };
-
+            
             UiHelpers.ApplyButtonStyle(btnSave);
             UiHelpers.ApplyButtonStyle(btnCancel);
 
@@ -430,7 +430,7 @@ namespace Performance
             this.Controls.Add(mainPanel);
             this.Controls.Add(titlePanel);
             this.Controls.Add(bottomPanel);
-
+            
             this.ResumeLayout(false);
         }
 
@@ -471,10 +471,10 @@ namespace Performance
             {
                 if (_project == null)
                 {
-                    var p = new ProjectEntity
-                    {
-                        Name = txtName.Text.Trim(),
-                        Description = txtDesc.Text.Trim(),
+                    var p = new ProjectEntity 
+                    { 
+                        Name = txtName.Text.Trim(), 
+                        Description = txtDesc.Text.Trim(), 
                         CreatedAt = DateTime.UtcNow,
                         ManagerNotes = _currentUser?.Role == UserRole.Manager ? txtManagerNotes?.Text?.Trim() : null
                     };
