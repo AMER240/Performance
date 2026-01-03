@@ -1,8 +1,8 @@
 # Performance - Project Management System
 
-A comprehensive project and task management system built with **.NET 8**, **Windows Forms**, and **Clean Architecture**.
+A comprehensive project and task management system built with **.NET 8**, **Windows Forms**, **Clean Architecture**, and **AI-powered suggestions**.
 
-> **? Clean Architecture Implementation Completed - January 1, 2026**
+> **? Clean Architecture + AI Features - January 2026**
 
 ---
 
@@ -40,26 +40,33 @@ dotnet run --project src/Performance.UI --no-build
 - [Overview](#overview)
 - [Architecture](#architecture)
 - [Features](#features)
+- [AI Features](#ai-features)
 - [User Roles](#user-roles)
 - [Database Schema](#database-schema)
 - [Getting Started](#getting-started)
 - [Project Structure](#project-structure)
 - [UI Components](#ui-components)
-- [AI Features](#ai-features)
-- [Recent Updates](#recent-updates)
-- [Git Commits](#git-commits)
+- [Configuration](#configuration)
+- [Common Issues](#common-issues)
+- [Documentation](#documentation)
 
 ---
 
 ## ?? Overview
 
-**Performance** is a desktop application for managing projects, tasks, and team members with role-based access control, AI-powered task suggestions, and a modern dark-themed UI.
+**Performance** is a modern desktop application for managing projects, tasks, and team members with:
+- ??? **Clean Architecture** - Fully separated concerns across 4 layers
+- ?? **AI-Powered Suggestions** - Gemini AI for project planning & task suggestions
+- ?? **Role-Based Access Control** - Manager/Employee permissions
+- ?? **Modern UI** - Dark-themed interface with DevExpress components
+- ?? **Real-Time Dashboard** - Statistics, upcoming deadlines, task tracking
 
 **Tech Stack:**
 - .NET 8
 - Windows Forms + DevExpress XtraForms
 - Entity Framework Core 8.0.0
 - SQL Server (LocalDB)
+- Gemini AI API (2.5-flash model)
 - Clean Architecture Pattern
 
 ---
@@ -72,11 +79,11 @@ dotnet run --project src/Performance.UI --no-build
 Performance.sln
 ?
 ??? src/
-?   ??? Performance.Domain/          ? Core Layer (No dependencies)
+?   ??? Performance.Domain/          ?? Core Layer (No dependencies)
 ?   ?   ??? Entities/
-?   ?   ?   ??? UserEntity.cs       (Pure POCO)
-?   ?   ?   ??? ProjectEntity.cs    (Pure POCO)
-?   ?   ?   ??? TaskEntity.cs       (Pure POCO)
+?   ?   ?   ??? UserEntity.cs       (Pure POCO + Sector field)
+?   ?   ?   ??? ProjectEntity.cs    (Pure POCO + ManagerNotes)
+?   ?   ?   ??? TaskEntity.cs       (Pure POCO + Relations)
 ?   ?   ??? Enums/
 ?   ?       ??? UserRole.cs
 ?   ?       ??? TaskStatus.cs
