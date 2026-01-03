@@ -342,6 +342,13 @@ namespace Performance
             {
                 _task = fullTask;
             }
+            else
+            {
+                MessageBox.Show($"Task with ID {task.Id} not found. It may have been deleted.", 
+                    "Task Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                this.Close();
+                return;
+            }
 
             txtTitle.Text = _task.Title;
             txtDesc.Text = _task.Description ?? string.Empty;

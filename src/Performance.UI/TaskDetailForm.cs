@@ -66,19 +66,19 @@ namespace Performance
             int yPos = 20;
 
             // Header Panel with Title
-            var headerPanel = new Panel() 
-            { 
-                Left = 20, 
-                Top = yPos, 
-                Width = 660, 
-                Height = 60, 
-                BackColor = UiColors.DarkGreen 
+            var headerPanel = new Panel()
+            {
+                Left = 20,
+                Top = yPos,
+                Width = 660,
+                Height = 60,
+                BackColor = UiColors.DarkGreen
             };
-            _lblTitle = new Label() 
-            { 
-                Left = 15, 
-                Top = 15, 
-                Width = 630, 
+            _lblTitle = new Label()
+            {
+                Left = 15,
+                Top = 15,
+                Width = 630,
                 Height = 30,
                 Font = new Font("Segoe UI", 14F, FontStyle.Bold),
                 ForeColor = Color.White,
@@ -89,11 +89,11 @@ namespace Performance
             yPos += 70;
 
             // Info Grid
-            var infoPanel = new TableLayoutPanel() 
-            { 
-                Left = 20, 
-                Top = yPos, 
-                Width = 660, 
+            var infoPanel = new TableLayoutPanel()
+            {
+                Left = 20,
+                Top = yPos,
+                Width = 660,
                 Height = 180,
                 BackColor = Color.White,
                 Padding = new Padding(15),
@@ -118,11 +118,11 @@ namespace Performance
             yPos += 35;
 
             // Description
-            var lblDescTitle = new Label() 
-            { 
-                Text = "Description", 
-                Left = 20, 
-                Top = yPos, 
+            var lblDescTitle = new Label()
+            {
+                Text = "Description",
+                Left = 20,
+                Top = yPos,
                 Font = new Font("Segoe UI", 10F, FontStyle.Bold),
                 ForeColor = UiColors.PrimaryText,
                 AutoSize = true
@@ -130,11 +130,11 @@ namespace Performance
             this.Controls.Add(lblDescTitle);
             yPos += 25;
 
-            _lblDescription = new Label() 
-            { 
-                Left = 20, 
-                Top = yPos, 
-                Width = 660, 
+            _lblDescription = new Label()
+            {
+                Left = 20,
+                Top = yPos,
+                Width = 660,
                 Height = 80,
                 ForeColor = UiColors.SecondaryText,
                 BackColor = Color.White,
@@ -148,11 +148,11 @@ namespace Performance
             // Manager Notes (if manager)
             if (_currentUser?.Role == UserRole.Manager)
             {
-                var lblNotesTitle = new Label() 
-                { 
-                    Text = "Manager Notes", 
-                    Left = 20, 
-                    Top = yPos, 
+                var lblNotesTitle = new Label()
+                {
+                    Text = "Manager Notes",
+                    Left = 20,
+                    Top = yPos,
                     Font = new Font("Segoe UI", 10F, FontStyle.Bold),
                     ForeColor = UiColors.PrimaryText,
                     AutoSize = true
@@ -160,11 +160,11 @@ namespace Performance
                 this.Controls.Add(lblNotesTitle);
                 yPos += 25;
 
-                _txtManagerNotes = new TextBox() 
-                { 
-                    Left = 20, 
-                    Top = yPos, 
-                    Width = 660, 
+                _txtManagerNotes = new TextBox()
+                {
+                    Left = 20,
+                    Top = yPos,
+                    Width = 660,
                     Height = 60,
                     Multiline = true
                 };
@@ -174,20 +174,20 @@ namespace Performance
             }
 
             // Status Change Panel
-            _statusPanel = new Panel() 
-            { 
-                Left = 20, 
-                Top = yPos, 
-                Width = 660, 
-                Height = 50, 
-                BackColor = UiColors.MediumGreen 
+            _statusPanel = new Panel()
+            {
+                Left = 20,
+                Top = yPos,
+                Width = 660,
+                Height = 50,
+                BackColor = UiColors.MediumGreen
             };
-            
-            var lblStatus = new Label() 
-            { 
-                Text = "Change Status:", 
-                Left = 10, 
-                Top = 15, 
+
+            var lblStatus = new Label()
+            {
+                Text = "Change Status:",
+                Left = 10,
+                Top = 15,
                 Font = new Font("Segoe UI", 9F, FontStyle.Bold),
                 ForeColor = Color.White,
                 AutoSize = true
@@ -233,17 +233,17 @@ namespace Performance
 
         private void AddInfoRow(TableLayoutPanel panel, int row, string labelText, ref Label valueLabel)
         {
-            var lbl = new Label() 
-            { 
-                Text = labelText, 
+            var lbl = new Label()
+            {
+                Text = labelText,
                 Dock = DockStyle.Fill,
                 TextAlign = ContentAlignment.MiddleLeft,
                 ForeColor = UiColors.SecondaryText,
                 Font = new Font("Segoe UI", 9F)
             };
-            
-            valueLabel = new Label() 
-            { 
+
+            valueLabel = new Label()
+            {
                 Dock = DockStyle.Fill,
                 TextAlign = ContentAlignment.MiddleLeft,
                 ForeColor = UiColors.PrimaryText,
@@ -256,12 +256,12 @@ namespace Performance
 
         private Button CreateStatusButton(string text, int left, Color backColor)
         {
-            var btn = new Button() 
-            { 
-                Text = text, 
-                Left = left, 
-                Top = 10, 
-                Width = 100, 
+            var btn = new Button()
+            {
+                Text = text,
+                Left = left,
+                Top = 10,
+                Width = 100,
                 Height = 30,
                 BackColor = backColor,
                 ForeColor = Color.White,
@@ -276,16 +276,33 @@ namespace Performance
         {
             try
             {
-                //  Single query with all relations loaded
-                _task = (await _taskService.GetAsync(_task.Id, includeRelations: true))!;
+                // Create new scope to avoid DbContext disposal issues
+                using var scope = _serviceProvider.CreateScope();
+                var taskService = scope.ServiceProvider.GetRequiredService<ITaskService>();
+
+                // Single query with all relations loaded
+                var freshTask = await taskService.GetAsync(_task.Id, includeRelations: true);
+
+                if (freshTask == null)
+                {
+                    MessageBox.Show($"Task with ID {_task.Id} not found. It may have been deleted.",
+                        "Task Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    this.Close();
+                    return;
+                }
+
+                _task = freshTask;
+
+                // Check if form is still valid
+                if (this.IsDisposed) return;
 
                 _lblTitle.Text = _task.Title;
                 _lblDescription.Text = _task.Description ?? "No description";
 
-                //  Use navigation property (already loaded)
+                // Use navigation property (already loaded)
                 _lblProject.Text = _task.Project?.Name ?? "Unknown Project";
 
-                //  Use navigation property (already loaded)
+                // Use navigation property (already loaded)
                 if (_task.AssignedToUser != null)
                 {
                     _lblAssignedTo.Text = _task.AssignedToUser.UserName;
@@ -314,7 +331,12 @@ namespace Performance
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to load task details: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (!this.IsDisposed)
+                {
+                    MessageBox.Show($"Failed to load task details: {ex.Message}", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    this.Close();
+                }
             }
         }
 
@@ -383,10 +405,10 @@ namespace Performance
                 }
 
                 await _taskService.UpdateAsync(_task);
-                
+
                 UpdateProgress();
                 HighlightCurrentStatus();
-                
+
                 MessageBox.Show($"Task status changed to {newStatus}", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
@@ -397,25 +419,44 @@ namespace Performance
 
         private void BtnEdit_Click(object? sender, EventArgs e)
         {
+            // Check if form is already disposed
+            if (this.IsDisposed) return;
+
             try
             {
                 using var scope = _serviceProvider.CreateScope();
                 var suggestionService = scope.ServiceProvider.GetRequiredService<ITaskSuggestionService>();
                 var taskService = scope.ServiceProvider.GetRequiredService<ITaskService>();
                 var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
-                
+
                 var form = new TaskEditForm(suggestionService, taskService, userService, _currentUser);
                 form.LoadTask(_task);
-                
+
+                // Check again before showing dialog
+                if (this.IsDisposed) return;
+
                 if (form.ShowDialog(this) == DialogResult.OK)
                 {
-                    LoadTaskDetails();
-                    MessageBox.Show("Task updated successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    // Check if form is still valid after dialog closes
+                    if (!this.IsDisposed)
+                    {
+                        LoadTaskDetails();
+                        MessageBox.Show("Task updated successfully", "Success",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
                 }
+            }
+            catch (ObjectDisposedException)
+            {
+                // Form was disposed, ignore silently
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to open edit form: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (!this.IsDisposed)
+                {
+                    MessageBox.Show($"Failed to open edit form: {ex.Message}", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 

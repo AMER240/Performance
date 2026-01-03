@@ -31,6 +31,8 @@ namespace Performance
         private Button _btnMyProfile = new Button();
         private ProjectEntity? _selectedProject;
         private DashboardStatsPanel? _statsPanel;
+        private System.Threading.CancellationTokenSource? _searchCancellation; 
+        private System.Threading.Timer? _searchTimer;  
 
         public MainForm(IProjectService projectService, IServiceProvider serviceProvider)
         {
@@ -102,8 +104,24 @@ namespace Performance
                 BackColor = Color.White,
                 ForeColor = UiColors.PrimaryText
             };
-            _txtSearch.TextChanged += async (s, e) => await RefreshProjects(_txtSearch.Text);
-            
+            _txtSearch.TextChanged += (s, e) =>
+            {
+                _searchCancellation?.Cancel();
+                _searchCancellation = new System.Threading.CancellationTokenSource();
+
+                _searchTimer?.Dispose();
+                _searchTimer = new System.Threading.Timer(async _ =>
+                {
+                    if (!_searchCancellation.Token.IsCancellationRequested)
+                    {
+                        try
+                        {
+                            await this.Invoke(async () => await RefreshProjects(_txtSearch.Text));
+                        }
+                        catch { }
+                    }
+                }, null, 300, System.Threading.Timeout.Infinite);
+            };
             topPanel.Controls.Add(_lblWelcome);
             topPanel.Controls.Add(lblSearchTitle);
             topPanel.Controls.Add(_txtSearch);
@@ -250,7 +268,10 @@ namespace Performance
         {
             try
             {
-                var projects = await _projectService.ListAsync(includeTasks: true);
+                using var scope = _serviceProvider.CreateScope();
+                var projectService = scope.ServiceProvider.GetRequiredService<IProjectService>();
+
+                var projects = await projectService.ListAsync(includeTasks: true);
                 if (!string.IsNullOrWhiteSpace(filter))
                 {
                     filter = filter.Trim().ToLowerInvariant();
@@ -491,74 +512,74 @@ namespace Performance
                 MinimizeBox = false
             };
 
-            var lblCurrent = new Label() 
-            { 
-                Text = "Current Password:", 
-                Left = 20, 
-                Top = 20, 
-                ForeColor = UiColors.PrimaryText, 
-                AutoSize = true 
+            var lblCurrent = new Label()
+            {
+                Text = "Current Password:",
+                Left = 20,
+                Top = 20,
+                ForeColor = UiColors.PrimaryText,
+                AutoSize = true
             };
-            var txtCurrent = new TextBox() 
-            { 
-                Left = 20, 
-                Top = 45, 
-                Width = 390, 
-                UseSystemPasswordChar = true 
+            var txtCurrent = new TextBox()
+            {
+                Left = 20,
+                Top = 45,
+                Width = 390,
+                UseSystemPasswordChar = true
             };
             UiHelpers.StyleTextBox(txtCurrent);
 
-            var lblNew = new Label() 
-            { 
-                Text = "New Password:", 
-                Left = 20, 
-                Top = 80, 
-                ForeColor = UiColors.PrimaryText, 
-                AutoSize = true 
+            var lblNew = new Label()
+            {
+                Text = "New Password:",
+                Left = 20,
+                Top = 80,
+                ForeColor = UiColors.PrimaryText,
+                AutoSize = true
             };
-            var txtNew = new TextBox() 
-            { 
-                Left = 20, 
-                Top = 105, 
-                Width = 390, 
-                UseSystemPasswordChar = true 
+            var txtNew = new TextBox()
+            {
+                Left = 20,
+                Top = 105,
+                Width = 390,
+                UseSystemPasswordChar = true
             };
             UiHelpers.StyleTextBox(txtNew);
 
-            var lblConfirm = new Label() 
-            { 
-                Text = "Confirm New Password:", 
-                Left = 20, 
-                Top = 140, 
-                ForeColor = UiColors.PrimaryText, 
-                AutoSize = true 
+            var lblConfirm = new Label()
+            {
+                Text = "Confirm New Password:",
+                Left = 20,
+                Top = 140,
+                ForeColor = UiColors.PrimaryText,
+                AutoSize = true
             };
-            var txtConfirm = new TextBox() 
-            { 
-                Left = 20, 
-                Top = 165, 
-                Width = 390, 
-                UseSystemPasswordChar = true 
+            var txtConfirm = new TextBox()
+            {
+                Left = 20,
+                Top = 165,
+                Width = 390,
+                UseSystemPasswordChar = true
             };
             UiHelpers.StyleTextBox(txtConfirm);
 
-            var btnOk = new Button() 
-            { 
-                Text = "Change", 
-                Left = 230, 
-                Top = 210, 
-                Width = 90, 
-                Height = 30, 
-                DialogResult = DialogResult.OK 
+            var btnOk = new Button()
+            {
+                Text = "Change",
+                Left = 230,
+                Top = 210,
+                Width = 90,
+                Height = 30,
+                DialogResult = DialogResult.OK
             };
-            var btnCancel = new Button() 
-            { 
-                Text = "Cancel", 
-                Left = 330, 
-                Top = 210, 
-                Width = 80, 
-                Height = 30, 
-                DialogResult = DialogResult.Cancel 
+            var btnCancel = new Button()
+            {
+                Text = "Cancel",
+                Left = 330,
+                Top = 210,
+                Width = 80,
+                Height = 30,
+                DialogResult = DialogResult.Cancel
             };
 
             UiHelpers.ApplyButtonStyle(btnOk);
@@ -621,6 +642,16 @@ namespace Performance
             {
                 MessageBox.Show($"Failed to change password: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _searchCancellation?.Cancel();
+                _searchCancellation?.Dispose();
+                _searchTimer?.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

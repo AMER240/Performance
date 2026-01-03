@@ -26,7 +26,15 @@ namespace Performance.Infrastructure.Repositories
 
         public virtual async Task<T?> GetByIdAsync(int id)
         {
-            return await _dbSet.FindAsync(id);
+            try
+            {
+                return await _dbSet.FindAsync(id);
+            }
+            catch (Exception)
+            {
+                // If entity not found or error, return null
+                return null;
+            }
         }
 
         public virtual async Task<IEnumerable<T>> GetAllAsync()
