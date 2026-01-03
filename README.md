@@ -711,16 +711,51 @@ For issues or questions:
 
 ---
 
+## ?? Deployment
+
+For deployment instructions, see:
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Complete .exe creation guide
+- **[SECURITY.md](SECURITY.md)** - Security best practices for API keys
+
+### Quick Publish
+
+```powershell
+# Option 1: Using script (Recommended)
+.\publish.bat
+
+# Option 2: Manual dotnet CLI
+dotnet publish src\Performance.UI\Performance.csproj ^
+  --configuration Release ^
+  --runtime win-x64 ^
+  --self-contained true ^
+  --output publish ^
+  -p:PublishSingleFile=true
+```
+
+**Important:** The `publish/` directory is ignored by Git and will NOT be uploaded to GitHub. This directory may contain sensitive configuration files with API keys.
+
+---
+
+## ?? Security
+
+- `appsettings.json` is **NOT tracked** by Git (contains API keys)
+- Use `appsettings.example.json` as template
+- See **[SECURITY.md](SECURITY.md)** for security best practices
+
+---
+
 **Last Updated:** January 2, 2026  
 **Version:** 1.1.0 (Gemini AI Integration)  
 **Build:** ? Successful  
-**Status:** ? Production Ready  
-**Architecture:** ? Clean Architecture Compliant
+**Status:** ?? Production Ready  
+**Architecture:** ??? Clean Architecture Compliant
 
 ---
 
 ## ?? Additional Documentation
 
+- **[Deployment Guide](DEPLOYMENT.md)** - .exe creation and publishing instructions
+- **[Security Guide](SECURITY.md)** - API key security and best practices
 - **[Clean Architecture Completion Report](Documentation/CLEAN_ARCHITECTURE_COMPLETION.md)** - Detailed implementation guide
 - **[Clean Architecture Status](Documentation/CLEAN_ARCHITECTURE_STATUS.md)** - Quick status summary  
 - **[Workspace Information](Documentation/WORKSPACE_INFORMATION.md)** - Project details
